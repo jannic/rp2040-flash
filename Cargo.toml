@@ -1,0 +1,22 @@
+[package]
+name = "rp2040-flash"
+version = "0.1.0"
+authors = ["Jan Niehusmann"]
+edition = "2021"
+resolver = "2"
+license = "MIT"
+description = "Support for writing the flash memory of the Raspberry Silicon RP2040."
+repository = "https://github.com/jannic/rp2040-flash"
+
+[dependencies]
+rp2040-hal = "0.5.0"
+
+[dev-dependencies]
+cortex-m = "0.7.5"
+cortex-m-rt = "0.7.1"
+defmt = "0.3.2"
+defmt-rtt = "0.3.2"
+embedded-hal = "0.2.7"
+embedded-time = "0.12.1"
+panic-probe = "0.3.0"
+rp-pico = "0.4.1"
