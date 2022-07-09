@@ -172,6 +172,9 @@ pub mod flash {
             rom_data::flash_enter_cmd_xip();
         */
         core::arch::asm!(
+            "mov r8, r0",
+            "mov r9, r2",
+            "mov r10, r1",
             "ldr r4, [{ptrs}, #0]",
             "blx r4", // connect_internal_flash()
 
@@ -207,14 +210,14 @@ pub mod flash {
             // Registers r8-r15 are not allocated automatically,
             // so assign them manually. We need to use them as
             // otherwise there are not enough registers available.
-            in("r8") addr,
-            in("r9") data.map(|d| d.as_ptr()).unwrap_or(core::ptr::null()),
-            in("r10") len,
-            out("r0") _,
-            out("r1") _,
-            out("r2") _,
+            in("r0") addr,
+            in("r2") data.map(|d| d.as_ptr()).unwrap_or(core::ptr::null()),
+            in("r1") len,
             out("r3") _,
             out("r4") _,
+            lateout("r8") _,
+            lateout("r9") _,
+            lateout("r10") _,
             clobber_abi("C"),
         );
     }
