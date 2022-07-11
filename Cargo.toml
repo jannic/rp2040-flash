@@ -4,9 +4,11 @@ version = "0.1.0"
 authors = ["Jan Niehusmann"]
 edition = "2021"
 resolver = "2"
-license = "MIT"
+license = "MIT OR Apache-2.0"
 description = "Support for writing the flash memory of the Raspberry Silicon RP2040."
 repository = "https://github.com/jannic/rp2040-flash"
+homepage = "https://github.com/jannic/rp2040-flash/"
+readme = "README.md"
 
 [dependencies]
 rp2040-hal = "0.5.0"
