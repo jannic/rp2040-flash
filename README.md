@@ -12,6 +12,12 @@ information on each specific license.
 Any submissions to this project (e.g. as Pull Requests) must be made available
 under these terms.
 
+### Contribution
+
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
+dual licensed as above, without any additional terms or conditions.
+
 ## Contact
 
 Matrix: [#rp-rs:matrix.org](https://matrix.to/#/#rp-rs:matrix.org)
