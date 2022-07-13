@@ -120,7 +120,12 @@ pub mod flash {
         } else {
             flash_function_pointers(true, true)
         };
-        write_flash_inner(addr, data.len() as u32, Some(data), &ptrs as *const FlashFunctionPointers);
+        write_flash_inner(
+            addr,
+            data.len() as u32,
+            Some(data),
+            &ptrs as *const FlashFunctionPointers,
+        );
     }
 
     /// Write a flash range starting at `addr` with data `data`.
@@ -147,7 +152,12 @@ pub mod flash {
         } else {
             flash_function_pointers(false, true)
         };
-        write_flash_inner(addr, data.len() as u32, Some(data), &ptrs as *const FlashFunctionPointers);
+        write_flash_inner(
+            addr,
+            data.len() as u32,
+            Some(data),
+            &ptrs as *const FlashFunctionPointers,
+        );
     }
 
     /// # Safety
@@ -161,7 +171,12 @@ pub mod flash {
     /// addr must be aligned to 4096
     #[inline(never)]
     #[link_section = ".data.ram_func"]
-    unsafe fn write_flash_inner(addr: u32, len: u32, data: Option<&[u8]>, ptrs: *const FlashFunctionPointers) {
+    unsafe fn write_flash_inner(
+        addr: u32,
+        len: u32,
+        data: Option<&[u8]>,
+        ptrs: *const FlashFunctionPointers,
+    ) {
         /*
          Should be equivalent to:
             rom_data::connect_internal_flash();
@@ -224,4 +239,3 @@ pub mod flash {
         );
     }
 }
-

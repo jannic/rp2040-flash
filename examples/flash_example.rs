@@ -44,11 +44,7 @@ impl FlashBlock {
         defmt::assert!(addr & 0xfff == 0);
 
         cortex_m::interrupt::free(|_cs| {
-            flash::flash_range_erase_and_program(
-                addr,
-                data,
-                true
-            );
+            flash::flash_range_erase_and_program(addr, data, true);
         });
     }
 }
@@ -122,8 +118,7 @@ fn main() -> ! {
         defmt::panic!("unexpected");
     }
 
-    loop {
-    }
+    loop {}
 }
 
 // End of file
