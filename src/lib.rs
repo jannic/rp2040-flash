@@ -207,17 +207,19 @@ pub mod flash {
             "ldr r4, [{ptrs}, #20]",
             "blx r4", // flash_enter_cmd_xip();
             ptrs = in(reg) ptrs,
-            // Registers r8-r15 are not allocated automatically,
-            // so assign them manually. We need to use them as
-            // otherwise there are not enough registers available.
             in("r0") addr,
             in("r2") data.map(|d| d.as_ptr()).unwrap_or(core::ptr::null()),
             in("r1") len,
             out("r3") _,
             out("r4") _,
-            lateout("r8") _,
-            lateout("r9") _,
-            lateout("r10") _,
+            // Registers r8-r10 are used to store values
+            // from r0-r2 in registers not clobbered by
+            // function calls.
+            // The values can't be passed in using r8-r10 directly
+            // due to https://github.com/rust-lang/rust/issues/99071
+            out("r8") _,
+            out("r9") _,
+            out("r10") _,
             clobber_abi("C"),
         );
     }
