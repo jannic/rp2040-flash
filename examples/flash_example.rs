@@ -34,7 +34,14 @@ impl FlashBlock {
 
     #[inline(never)]
     fn read(&self) -> &[u8; 4096] {
-        unsafe { &*self.data.get() }
+        // Make sure the compiler can't know that
+        // we actually access a specific static
+        // variable, to avoid unexpected optimizations
+        //
+        // (Don't try this with strict provenance.)
+        let addr = self.addr();
+
+        unsafe { &*(&*(addr as *const Self)).data.get() }
     }
 
     unsafe fn write_flash(&self, data: &[u8; 4096]) {
