@@ -5,8 +5,6 @@ use bsp::entry;
 use core::cell::UnsafeCell;
 use defmt::*;
 use defmt_rtt as _;
-use embedded_hal::digital::v2::OutputPin;
-use embedded_time::fixed_point::FixedPoint;
 use panic_probe as _;
 
 // Provide an alias for our BSP so we can switch targets quickly.
@@ -79,14 +77,14 @@ fn main() -> ! {
     .ok()
     .unwrap();
 
-    let mut delay = cortex_m::delay::Delay::new(core.SYST, clocks.system_clock.freq().integer());
+    let mut delay = cortex_m::delay::Delay::new(core.SYST, clocks.system_clock.freq().to_Hz());
     // add some delay to give an attached debug probe time to parse the
     // defmt RTT header. Reading that header might touch flash memory, which
     // interferes with flash write operations.
     // https://github.com/knurling-rs/defmt/pull/683
     delay.delay_ms(10);
 
-    let pins = bsp::Pins::new(
+    let _pins = bsp::Pins::new(
         pac.IO_BANK0,
         pac.PADS_BANK0,
         sio.gpio_bank0,
