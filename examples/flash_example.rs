@@ -48,8 +48,13 @@ impl FlashBlock {
         let addr = self.addr() - 0x10000000;
         defmt::assert!(addr & 0xfff == 0);
 
+        let flash_iap = flash::FlashIAP::new(true);
+
         cortex_m::interrupt::free(|_cs| {
-            flash::flash_range_erase_and_program(addr, data, true);
+            // SAFETY: we made sure the requirements are met
+            unsafe {
+                flash_iap.flash_range_erase_and_program(addr, data);
+            }
         });
     }
 }

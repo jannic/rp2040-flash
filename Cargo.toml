@@ -23,6 +23,10 @@ embedded-time = "0.12.1"
 panic-probe = "0.3.0"
 rp-pico = "0.5"
 
+[features]
+default = ["use-asm"]
+use-asm = []
+
 [profile.dev]
 debug = 1         # skip line info for cleaner probe-run output
 lto = false
