@@ -48,7 +48,7 @@ impl FlashBlock {
         let addr = self.addr() - 0x10000000;
         defmt::assert!(addr & 0xfff == 0);
 
-        let flash_iap = flash::FlashIAP::new(true);
+        let mut flash_iap = flash::FlashIAP::new(true);
 
         cortex_m::interrupt::free(|_cs| {
             // SAFETY: we made sure the requirements are met

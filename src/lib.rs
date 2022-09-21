@@ -21,7 +21,7 @@ pub mod flash {
 
     pub struct FlashIAP {
         fn_ptrs: FlashFunctionPointers,
-        boot2: [u32; 256 / 4],
+        boot2: Option<[u32; 256 / 4]>,
     }
 
     impl FlashIAP {
@@ -35,14 +35,16 @@ pub mod flash {
                     flash_flush_cache: rom_data::flash_flush_cache::ptr(),
                     flash_enter_cmd_xip: rom_data::flash_enter_cmd_xip::ptr(),
                 },
-                boot2: [0u32; 256 / 4],
+                boot2: None,
             };
             if use_boot2 {
+                me.boot2 = Some([0u32; 256 / 4]);
                 unsafe {
-                    rom_data::memcpy44(&mut me.boot2 as *mut _, 0x10000000 as *const _, 256);
-                    let boot2_fn_ptr = (&me.boot2 as *const u32 as *const u8).offset(1);
-                    let boot2_fn: unsafe extern "C" fn() -> () = core::mem::transmute(boot2_fn_ptr);
-                    me.fn_ptrs.flash_enter_cmd_xip = boot2_fn;
+                    rom_data::memcpy44(
+                        me.boot2.as_mut().unwrap_unchecked() as *mut _,
+                        0x10000000 as *const _,
+                        256,
+                    );
                 }
             }
             me
@@ -64,7 +66,7 @@ pub mod flash {
         ///   - DMA must not access flash memory
         ///
         /// `addr` and `len` parameters must be valid and are not checked.
-        pub unsafe fn flash_range_erase(&self, addr: u32, len: usize) {
+        pub unsafe fn flash_range_erase(&mut self, addr: u32, len: usize) {
             self.write_flash_inner(addr, DataOrLen::Len(len as usize), true);
         }
 
@@ -84,7 +86,7 @@ pub mod flash {
         ///   - DMA must not access flash memory
         ///
         /// `addr` and `len` parameters must be valid and are not checked.
-        pub unsafe fn flash_range_erase_and_program(&self, addr: u32, data: &[u8]) {
+        pub unsafe fn flash_range_erase_and_program(&mut self, addr: u32, data: &[u8]) {
             self.write_flash_inner(addr, DataOrLen::Data(data), true);
         }
 
@@ -104,22 +106,29 @@ pub mod flash {
         ///   - DMA must not access flash memory
         ///
         /// `addr` and `len` parameters must be valid and are not checked.
-        pub unsafe fn flash_range_program(&self, addr: u32, data: &[u8]) {
+        pub unsafe fn flash_range_program(&mut self, addr: u32, data: &[u8]) {
             self.write_flash_inner(addr, DataOrLen::Data(data), false);
         }
 
-        unsafe fn write_flash_inner(&self, addr: u32, data: DataOrLen, erase: bool) {
+        unsafe fn write_flash_inner(&mut self, addr: u32, data: DataOrLen, erase: bool) {
             let (data_ptr, len) = match data {
                 DataOrLen::Data(data) => (data.as_ptr(), data.len()),
                 DataOrLen::Len(len) => (core::ptr::null(), len),
             };
+
+            // this is done on every call in case Self was moved in the mean time.
+            if let Some(boot2) = self.boot2.as_ref() {
+                let boot2_fn_ptr = (boot2 as *const u32 as *const u8).offset(1);
+                let boot2_fn: unsafe extern "C" fn() -> () = core::mem::transmute(boot2_fn_ptr);
+                self.fn_ptrs.flash_enter_cmd_xip = boot2_fn;
+            }
             self.write_flash_inner_in_ram(addr, data_ptr, len, erase)
         }
 
         #[inline(never)]
         #[link_section = ".data.ram_func"]
         unsafe fn write_flash_inner_in_ram(
-            &self,
+            &mut self,
             addr: u32,
             data_ptr: *const u8,
             len: usize,
