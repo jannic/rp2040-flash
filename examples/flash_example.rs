@@ -52,9 +52,7 @@ impl FlashBlock {
 
         cortex_m::interrupt::free(|_cs| {
             // SAFETY: we made sure the requirements are met
-            unsafe {
-                flash_iap.flash_range_erase_and_program(addr, data);
-            }
+            flash_iap.flash_range_erase_and_program(addr, data);
         });
     }
 }
