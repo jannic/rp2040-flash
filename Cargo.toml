@@ -11,7 +11,7 @@ homepage = "https://github.com/jannic/rp2040-flash/"
 readme = "README.md"
 
 [dependencies]
-rp2040-hal = { version = "0.7.0", default-features = false }
+rp2040-hal = { version = "0.8.0", default-features = false }
 
 [dev-dependencies]
 cortex-m = "0.7.7"
@@ -21,4 +21,4 @@ defmt-rtt = "0.4.0"
 embedded-hal = "0.2.7"
 embedded-time = "0.12.1"
 panic-probe = "0.3.0"
-rp-pico = "0.6.0"
+rp-pico = "0.7.0"
