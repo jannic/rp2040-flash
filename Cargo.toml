@@ -1,6 +1,6 @@
 [package]
 name = "rp2040-flash"
-version = "0.1.1"
+version = "0.2.0"
 authors = ["Jan Niehusmann"]
 edition = "2021"
 resolver = "2"
