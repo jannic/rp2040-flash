@@ -108,17 +108,10 @@ fn main() -> ! {
     }
     psm.frce_off.modify(|_, w| w.proc1().clear_bit());
 
-    let jedec_id: u32 = unsafe {
-        cortex_m::interrupt::free(|_cs| {
-            flash::flash_jedec_id(true)
-        })
-    };
+    let jedec_id: u32 = unsafe { cortex_m::interrupt::free(|_cs| flash::flash_jedec_id(true)) };
     info!("JEDEC ID {:x}", jedec_id);
-    let unique_id: u64 = unsafe {
-        cortex_m::interrupt::free(|_cs| {
-            flash::flash_unique_id(true)
-        })
-    };
+    let mut unique_id = [0u8; 8];
+    unsafe { cortex_m::interrupt::free(|_cs| flash::flash_unique_id(&mut unique_id, true)) };
     info!("Unique ID {:x}", unique_id);
 
     let read_data: [u8; 4096] = *TEST.read();
