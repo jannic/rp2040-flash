@@ -41,7 +41,7 @@ impl FlashBlock {
         // (Don't try this with strict provenance.)
         let addr = self.addr();
 
-        unsafe { &*(&*(addr as *const Self)).data.get() }
+        unsafe { &*(*(addr as *const Self)).data.get() }
     }
 
     unsafe fn write_flash(&self, data: &[u8; 4096]) {
@@ -129,7 +129,9 @@ fn main() -> ! {
         defmt::panic!("unexpected");
     }
 
-    loop {}
+    loop {
+        cortex_m::asm::wfi();
+    }
 }
 
 // End of file
