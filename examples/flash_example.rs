@@ -112,18 +112,18 @@ fn main() -> ! {
     info!("JEDEC ID {:x}", jedec_id);
     let mut unique_id = [0u8; 8];
     unsafe { cortex_m::interrupt::free(|_cs| flash::flash_unique_id(&mut unique_id, true)) };
-    info!("Unique ID {:x}", unique_id);
+    info!("Unique ID {:#x}", unique_id);
 
     let read_data: [u8; 4096] = *TEST.read();
-    info!("Addr of flash block is {:x}", TEST.addr());
-    info!("Contents start with {=[u8]}", read_data[0..4]);
+    info!("Addr of flash block is {:#x}", TEST.addr());
+    info!("Contents start with {=[u8]:#x}", read_data[0..4]);
     let mut data: [u8; 4096] = *TEST.read();
     data[0] = data[0].wrapping_add(1);
     core::sync::atomic::compiler_fence(core::sync::atomic::Ordering::SeqCst);
     unsafe { TEST.write_flash(&data) };
     core::sync::atomic::compiler_fence(core::sync::atomic::Ordering::SeqCst);
     let read_data: [u8; 4096] = *TEST.read();
-    info!("Contents start with {=[u8]}", read_data[0..4]);
+    info!("Contents start with {=[u8]:#x}", read_data[0..4]);
 
     if read_data[0] != 0x56 {
         defmt::panic!("unexpected");
