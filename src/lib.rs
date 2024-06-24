@@ -167,6 +167,7 @@ pub mod flash {
     ///   - interrupts must be disabled
     ///   - 2nd core must be running code from RAM or ROM with interrupts disabled
     ///   - DMA must not access flash memory
+    ///
     /// Length of data must be a multiple of 4096
     /// addr must be aligned to 4096
     #[inline(never)]
