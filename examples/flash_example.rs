@@ -102,11 +102,11 @@ fn main() -> ! {
 
     // Reset core1 so it's guaranteed to be running
     // ROM code, waiting for the wakeup sequence
-    psm.frce_off.modify(|_, w| w.proc1().set_bit());
-    while !psm.frce_off.read().proc1().bit_is_set() {
+    psm.frce_off().modify(|_, w| w.proc1().set_bit());
+    while !psm.frce_off().read().proc1().bit_is_set() {
         cortex_m::asm::nop();
     }
-    psm.frce_off.modify(|_, w| w.proc1().clear_bit());
+    psm.frce_off().modify(|_, w| w.proc1().clear_bit());
 
     let jedec_id: u32 = unsafe { cortex_m::interrupt::free(|_cs| flash::flash_jedec_id(true)) };
     info!("JEDEC ID {:x}", jedec_id);
