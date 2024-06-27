@@ -71,7 +71,10 @@ pub mod flash {
 
     /// Erase a flash range starting at `addr` with length `len`.
     ///
-    /// `addr` and `len` must be multiples of 4096
+    /// `addr` and `len` must be multiples of 4096.
+    ///
+    /// `addr` is relative to the beginning of the flash area,
+    /// and must be smaller than 0x01000000.
     ///
     /// If `use_boot2` is `true`, a copy of the 2nd stage boot loader
     /// is used to re-initialize the XIP engine after flashing.
@@ -86,6 +89,7 @@ pub mod flash {
     ///
     /// `addr` and `len` parameters must be valid and are not checked.
     pub unsafe fn flash_range_erase(addr: u32, len: u32, use_boot2: bool) {
+        assert!(addr < 0x1000000);
         let mut boot2 = [0u32; 256 / 4];
         let ptrs = if use_boot2 {
             rom_data::memcpy44(&mut boot2 as *mut _, 0x10000000 as *const _, 256);
@@ -98,7 +102,10 @@ pub mod flash {
 
     /// Erase and rewrite a flash range starting at `addr` with data `data`.
     ///
-    /// `addr` and `data.len()` must be multiples of 4096
+    /// `addr` and `data.len()` must be multiples of 4096.
+    ///
+    /// `addr` is relative to the beginning of the flash area,
+    /// and must be smaller than 0x01000000.
     ///
     /// If `use_boot2` is `true`, a copy of the 2nd stage boot loader
     /// is used to re-initialize the XIP engine after flashing.
@@ -113,6 +120,7 @@ pub mod flash {
     ///
     /// `addr` and `len` parameters must be valid and are not checked.
     pub unsafe fn flash_range_erase_and_program(addr: u32, data: &[u8], use_boot2: bool) {
+        assert!(addr < 0x1000000);
         let mut boot2 = [0u32; 256 / 4];
         let ptrs = if use_boot2 {
             rom_data::memcpy44(&mut boot2 as *mut _, 0x10000000 as *const _, 256);
@@ -130,7 +138,10 @@ pub mod flash {
 
     /// Write a flash range starting at `addr` with data `data`.
     ///
-    /// `addr` and `data.len()` must be multiples of 256
+    /// `addr` and `data.len()` must be multiples of 256.
+    ///
+    /// `addr` is relative to the beginning of the flash area,
+    /// and must be smaller than 0x01000000.
     ///
     /// If `use_boot2` is `true`, a copy of the 2nd stage boot loader
     /// is used to re-initialize the XIP engine after flashing.
@@ -145,6 +156,7 @@ pub mod flash {
     ///
     /// `addr` and `len` parameters must be valid and are not checked.
     pub unsafe fn flash_range_program(addr: u32, data: &[u8], use_boot2: bool) {
+        assert!(addr < 0x1000000);
         let mut boot2 = [0u32; 256 / 4];
         let ptrs = if use_boot2 {
             rom_data::memcpy44(&mut boot2 as *mut _, 0x10000000 as *const _, 256);
