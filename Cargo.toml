@@ -1,6 +1,6 @@
 [package]
 name = "rp2040-flash"
-version = "0.5.2"
+version = "0.6.0"
 authors = ["Jan Niehusmann"]
 edition = "2021"
 resolver = "2"
@@ -11,7 +11,7 @@ homepage = "https://github.com/jannic/rp2040-flash/"
 readme = "README.md"
 
 [dependencies]
-rp2040-hal = { version = "0.10.0", default-features = false }
+rp2040-hal = { version = "0.11.0", default-features = false }
 
 [dev-dependencies]
 cortex-m = "0.7.7"
@@ -21,4 +21,5 @@ defmt-rtt = "0.4.0"
 embedded-hal = "0.2.7"
 embedded-time = "0.12.1"
 panic-probe = "0.3.0"
-rp-pico = "0.9"
+rp2040-boot2 = "0.3.0"
+rp2040-hal = { version = "0.11.0", features = ["critical-section-impl"] }

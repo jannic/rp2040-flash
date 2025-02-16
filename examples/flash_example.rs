@@ -1,23 +1,27 @@
 #![no_std]
 #![no_main]
 
-use bsp::entry;
 use core::cell::UnsafeCell;
 use defmt::*;
 use defmt_rtt as _;
 use panic_probe as _;
 
-// Provide an alias for our BSP so we can switch targets quickly.
-// Uncomment the BSP you included in Cargo.toml, the rest of the code does not need to change.
-use rp_pico as bsp;
-// use sparkfun_pro_micro_rp2040 as bsp;
+use rp2040_hal as hal;
 
-use bsp::hal::{
+use hal::{
     clocks::{init_clocks_and_plls, Clock},
+    entry,
     pac,
-    sio::Sio,
     watchdog::Watchdog,
 };
+
+/// The linker will place this boot block at the start of our program image. We
+/// need this to help the ROM bootloader get our code up and running.
+/// Note: This boot block is not necessary when using a rp-hal based BSP
+/// as the BSPs already perform this step.
+#[link_section = ".boot2"]
+#[used]
+pub static BOOT2: [u8; 256] = rp2040_boot2::BOOT_LOADER_GENERIC_03H;
 
 #[repr(C, align(4096))]
 struct FlashBlock {
@@ -68,7 +72,6 @@ fn main() -> ! {
     let mut pac = pac::Peripherals::take().unwrap();
     let core = pac::CorePeripherals::take().unwrap();
     let mut watchdog = Watchdog::new(pac.WATCHDOG);
-    let sio = Sio::new(pac.SIO);
 
     // External high-speed crystal on the pico board is 12Mhz
     let external_xtal_freq_hz = 12_000_000u32;
@@ -90,13 +93,6 @@ fn main() -> ! {
     // interferes with flash write operations.
     // https://github.com/knurling-rs/defmt/pull/683
     delay.delay_ms(10);
-
-    let _pins = bsp::Pins::new(
-        pac.IO_BANK0,
-        pac.PADS_BANK0,
-        sio.gpio_bank0,
-        &mut pac.RESETS,
-    );
 
     let psm = pac.PSM;
 
