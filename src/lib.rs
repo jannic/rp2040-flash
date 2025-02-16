@@ -357,7 +357,11 @@ pub mod flash {
     #[link_section = ".data.ram_func"]
     unsafe fn read_flash_inner(cmd: FlashCommand, ptrs: *const FlashFunctionPointers) {
         core::arch::asm!(
-            "mov r10, r0", // cmd
+            // r6, r7 are LLVM-reserved and can't be marked as a clobber, so save/restore them manually
+            // (r6 is not actually used, but we need to push two words to maintain stack alignment)
+            "push {{r6, r7}}",
+
+            "mov r7, r0", // cmd
             "mov r5, r1", // ptrs
 
             "ldr r4, [r5, #0]",
@@ -365,8 +369,6 @@ pub mod flash {
 
             "ldr r4, [r5, #4]",
             "blx r4", // flash_exit_xip()
-
-            "mov r7, r10", // cmd
 
             "movs r4, #0x18",
             "lsls r4, r4, #24", // 0x18000000, SSI, RP2040 datasheet 4.10.13
@@ -453,19 +455,14 @@ pub mod flash {
             "ldr r4, [r5, #20]",
             "blx r4", // flash_enter_cmd_xip();
 
+            "pop {{r6, r7}}",
+
             in("r0") &cmd as *const FlashCommand,
             in("r1") ptrs,
             out("r2") _,
             out("r3") _,
             out("r4") _,
-            // Registers r8-r10 are used to store values
-            // from r0-r2 in registers not clobbered by
-            // function calls.
-            // The values can't be passed in using r8-r10 directly
-            // due to https://github.com/rust-lang/rust/issues/99071
-            out("r8") _,
-            out("r9") _,
-            out("r10") _,
+            out("r5") _,
             clobber_abi("C"),
         );
     }
